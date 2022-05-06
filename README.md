@@ -1,2 +1,5 @@
 # tatu
-A CLI tool to perform simple operations with PDF files.
+
+A command line tool to work with PDF files.
+
+---
