@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 import PyPDF2
+import requests
 from rich.console import Console
 from rich.traceback import install
 
@@ -66,8 +67,30 @@ def cut():
     pass
 
 @cli.command()
-def retrive(source, dest):
-    pass
+@click.option('-u', '--url', type=str)
+@click.option('-f', '--from-file', type=str)
+@click.option('-d', '--destination', default='.', type=str)
+def download(url, from_file, destination):
+    print(url)
+    print(from_file)
+    print(destination)
+    chunck_size = 2 * 1024
+    bar_char = '/'
+
+    destination = Path(destination)
+    if not destination.is_dir():
+        raise RuntimeWarning()
+
+    index = url.rfind(bar_char)
+    filename = url[index:].replace(bar_char,'')
+    filename = filename if filename else 'download.pdf'
+    save_file_at = Path(destination, filename)
+
+    response = requests.get(url, stream=True)
+    with open(save_file_at, 'wb') as f:
+        for chuck in response.iter_content(chunck_size):
+            f.write(chuck)
+
 
 if __name__ == "__main__":
     cli()
